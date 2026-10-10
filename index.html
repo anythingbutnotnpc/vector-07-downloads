@@ -1,222 +1,141 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090d0e">
-  <meta name="description" content="VECTOR 07 is a field-inspired digital chronograph for timing intervals and recording lap splits on Android.">
-  <title>VECTOR 07 — Field Chronograph</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #090d0e;
-      --panel: #0e1517;
-      --panel-2: #121c1e;
-      --line: #293739;
-      --line-bright: #415458;
-      --text: #edf1e9;
-      --muted: #9aa9a8;
-      --dim: #657878;
-      --acid: #d8ff42;
-      --cyan: #80d7d4;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-      --sans: Inter, "Segoe UI", Helvetica, Arial, sans-serif;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; background: var(--bg); }
-    body {
-      margin: 0; color: var(--text); font-family: var(--sans); background: var(--bg);
-      background-image: linear-gradient(rgba(128,215,212,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(128,215,212,.025) 1px, transparent 1px);
-      background-size: 36px 36px;
-    }
-    a { color: inherit; }
-    .frame { max-width: 1200px; width: calc(100% - 48px); margin: 0 auto; }
-    .topbar { display:flex; align-items:center; justify-content:space-between; gap: 24px; min-height: 82px; border-bottom:1px solid var(--line); }
-    .brand { display:flex; align-items:center; gap:13px; text-decoration:none; }
-    .sigil { width:40px; height:40px; border:1px solid var(--acid); display:grid; place-items:center; color:var(--acid); position:relative; font:700 20px/1 var(--sans); letter-spacing:-.08em; }
-    .sigil:after { content:"07"; position:absolute; right:3px; bottom:2px; font:7px var(--mono); letter-spacing:0; color:var(--acid); background:var(--bg); padding-left:3px; }
-    .brand-name { font-size:17px; font-weight:800; letter-spacing:.16em; }
-    .brand-name b { color:var(--acid); }
-    .brand-sub { display:block; margin-top:5px; color:var(--muted); font:9px var(--mono); letter-spacing:.13em; }
-    .top-meta { display:flex; align-items:center; gap:18px; color:var(--muted); font:10px var(--mono); letter-spacing:.12em; text-transform:uppercase; }
-    .led { width:7px;height:7px; background:var(--acid);border-radius:50%;box-shadow:0 0 12px #d8ff4270;display:inline-block;margin-right:7px; }
-    .hero { display:grid; grid-template-columns:minmax(0,1.02fr) minmax(360px,.98fr); align-items:center; gap:clamp(32px,6vw,88px); padding:clamp(44px,8vw,90px) 0 62px; }
-    .kicker { color:var(--cyan); font:10px var(--mono); letter-spacing:.2em; text-transform:uppercase; display:flex;align-items:center;gap:12px; }
-    .kicker:before { content:""; width:28px;height:1px;background:var(--cyan); }
-    h1 { margin:21px 0 20px; font-size:clamp(52px,7.4vw,94px); line-height:.86; letter-spacing:-.065em; font-weight:800; }
-    h1 span { color:var(--acid); display:block; }
-    .intro { color:#bdc8c4; max-width:540px; font-size:16px; line-height:1.75; margin:0; }
-    .hero-specs { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));max-width:540px;margin:31px 0 30px;border-top:1px solid var(--line);border-bottom:1px solid var(--line); }
-    .spec { padding:14px 12px 14px 0; min-width:0; }
-    .spec + .spec { padding-left:15px;border-left:1px solid var(--line); }
-    .spec label { display:block;color:var(--dim);font:9px var(--mono);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px; }
-    .spec strong { font:600 13px var(--mono); letter-spacing:-.02em; color:var(--text); }
-    .actions { display:flex;align-items:center;gap:12px;flex-wrap:wrap; }
-    .button { display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:51px;padding:0 20px;text-decoration:none;font:700 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line-bright);transition:transform .15s,border-color .15s,background .15s; }
-    .button:hover { transform:translateY(-2px);border-color:var(--acid); }
-    .button-primary { background:var(--acid);color:#10150a;border-color:var(--acid); }
-    .button-primary:hover { background:#e6ff83; }
-    .button-secondary { color:var(--text);background:rgba(14,21,23,.75); }
-    .download-note { color:var(--dim);font:10px/1.7 var(--mono);margin-top:13px; }
-    .instrument { position:relative; min-height:420px; display:grid;place-items:center; isolation:isolate; }
-    .instrument:before,.instrument:after { content:"";position:absolute;inset:8% 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);z-index:-1; }
-    .instrument:after { inset:0 13%;border:0;border-left:1px solid var(--line);border-right:1px solid var(--line); }
-    .scope { width:min(100%,465px);aspect-ratio:1;position:relative; }
-    .scope svg { width:100%;height:100%;display:block; }
-    .scope-readout { position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;pointer-events:none; }
-    .scope-label { color:var(--muted);font:9px var(--mono);letter-spacing:.22em;text-transform:uppercase;margin-bottom:18px; }
-    .scope-time { font:clamp(23px,3vw,33px) var(--mono);letter-spacing:-.09em;white-space:nowrap; }
-    .scope-status { font:9px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--acid);margin-top:17px; }
-    .axis-label { position:absolute;color:var(--dim);font:8px var(--mono);letter-spacing:.1em; }
-    .axis-top { top:0;left:50%;transform:translateX(-50%); }
-    .axis-bottom { bottom:0;left:50%;transform:translateX(-50%); }
-    .axis-left { left:0;top:50%;transform:translateY(-50%) rotate(-90deg); }
-    .axis-right { right:0;top:50%;transform:translateY(-50%) rotate(90deg); }
-    .section-head { display:flex;align-items:end;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line);padding-bottom:15px;margin-bottom:22px; }
-    .section-head h2 { margin:0;font-size:17px;letter-spacing:.1em;text-transform:uppercase; }
-    .section-head span { color:var(--dim);font:9px var(--mono);letter-spacing:.12em; }
-    .previews { padding:32px 0 74px; }
-    .preview-grid { display:grid;grid-template-columns:1.55fr .65fr;gap:18px;align-items:start; }
-    .preview-card { border:1px solid var(--line);background:var(--panel);padding:10px;position:relative;overflow:hidden; }
-    .preview-card:before { content:"";position:absolute;top:0;left:0;width:55px;height:2px;background:var(--acid);z-index:2; }
-    .preview-card img { display:block;width:100%;height:auto;border:1px solid #253234; }
-    .preview-label { display:flex;justify-content:space-between;gap:12px;padding:11px 3px 1px;color:var(--muted);font:9px var(--mono);letter-spacing:.1em;text-transform:uppercase; }
-    .feature-strip { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin:8px 0 74px; }
-    .feature { padding:24px 22px 26px;background:var(--panel);min-height:148px; }
-    .feature-num { color:var(--acid);font:10px var(--mono);letter-spacing:.12em; }
-    .feature h3 { margin:16px 0 9px;font-size:13px;text-transform:uppercase;letter-spacing:.1em; }
-    .feature p { margin:0;color:var(--muted);font-size:12px;line-height:1.7; }
-    .release-panel { display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;border:1px solid var(--line-bright);background:linear-gradient(115deg,#121c1d,#0b1011);padding:clamp(22px,4vw,38px);position:relative;overflow:hidden;margin-bottom:60px; }
-    .release-panel:after { content:"07";position:absolute;right:24%;top:-45px;color:rgba(216,255,66,.035);font:800 180px/1 var(--sans);pointer-events:none; }
-    .release-kicker { color:var(--acid);font:9px var(--mono);letter-spacing:.18em;text-transform:uppercase; }
-    .release-panel h2 { margin:11px 0 9px;font-size:clamp(24px,3vw,34px);letter-spacing:-.035em; }
-    .release-panel p { max-width:620px;color:var(--muted);font-size:13px;line-height:1.8;margin:0; }
-    .release-action { position:relative;z-index:1; }
-    .safety { border-left:2px solid var(--line-bright);padding:2px 0 2px 15px;color:var(--dim);font:10px/1.8 var(--mono);margin:0 0 56px; }
-    footer { display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border-top:1px solid var(--line);padding:20px 0 26px;color:var(--dim);font:9px/1.7 var(--mono);letter-spacing:.08em;text-transform:uppercase; }
-    footer a { color:var(--muted);text-decoration:none; }
-    footer a:hover { color:var(--acid); }
-    @media (max-width:800px) {
-      .frame { width:calc(100% - 30px); }
-      .topbar { min-height:72px; }
-      .top-meta { display:none; }
-      .hero { grid-template-columns:1fr;gap:20px;padding:47px 0 35px; }
-      h1 { font-size:clamp(53px,15vw,82px); }
-      .intro { font-size:14px; }
-      .hero-specs { margin-top:24px; }
-      .instrument { min-height:0;padding:15px 0 22px; }
-      .scope { width:min(100%,410px); }
-      .preview-grid { grid-template-columns:1fr; }
-      .preview-card.mobile-preview { max-width:440px;margin:0 auto; }
-      .feature-strip { grid-template-columns:1fr;margin-bottom:45px; }
-      .feature { min-height:0; }
-      .release-panel { grid-template-columns:1fr; }
-      .release-action .button { width:100%; }
-      .previews { padding-bottom:45px; }
-      .safety { margin-bottom:38px; }
-    }
-    @media (max-width:400px) {
-      .brand-name { font-size:15px; }
-      .brand-sub { font-size:8px;letter-spacing:.08em; }
-      .hero-specs { grid-template-columns:1fr 1fr; }
-      .spec:last-child { grid-column:1/-1;border-left:0;border-top:1px solid var(--line);padding-left:0; }
-      .button { width:100%; }
-      .actions { display:grid;grid-template-columns:1fr; }
-    }
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } .button { transition:none; } }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080b0d">
+<meta name="description" content="VECTOR 07 — a precision stopwatch for split times and focused work.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>VECTOR 07 — Precision Chronometer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{color-scheme:dark;--bg:#080b0d;--panel:#0d1215;--panel2:#10171a;--line:#283237;--line2:#3d4a4e;--white:#edf1ed;--muted:#829095;--faint:#536168;--signal:#d8fa4e;--cyan:#83c7c8;--red:#fa786a;--mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Consolas,monospace;--display:'Barlow Condensed','Arial Narrow',sans-serif}
+*{box-sizing:border-box}html{min-height:100%;background:var(--bg)}body{margin:0;min-height:100svh;background:radial-gradient(ellipse at 50% 38%,#111a1d 0,#0a0e10 48%,#07090b 100%);color:var(--white);font-family:var(--mono);font-variant-numeric:tabular-nums;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;background-image:linear-gradient(rgba(131,199,200,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(131,199,200,.07) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,black,transparent 95%);z-index:0}
+button{font:inherit;color:inherit;cursor:pointer}button:focus-visible{outline:2px solid var(--signal);outline-offset:3px}button:disabled{opacity:.38;cursor:not-allowed}.app{position:relative;z-index:1;max-width:1480px;margin:auto;padding:22px 28px 20px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 0 17px;border-bottom:1px solid var(--line)}.identity{display:flex;align-items:center;gap:13px;min-width:0}.mark{position:relative;width:38px;height:38px;border:1px solid var(--signal);display:grid;place-items:center;color:var(--signal);font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.08em;flex:0 0 auto}.mark:before,.mark:after{content:"";position:absolute;background:var(--signal)}.mark:before{width:7px;height:1px;right:-4px;top:7px}.mark:after{height:7px;width:1px;left:7px;bottom:-4px}.brand-name{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:.15em;line-height:1;text-transform:uppercase;white-space:nowrap}.brand-sub{color:var(--muted);font-size:9px;letter-spacing:.15em;margin-top:6px;text-transform:uppercase}.top-meta{display:flex;align-items:center;gap:clamp(14px,3vw,42px)}.meta-block{font-size:9px;color:var(--muted);letter-spacing:.12em;white-space:nowrap}.meta-block strong{display:block;color:var(--white);font-size:10px;font-weight:400;margin-top:5px;letter-spacing:.08em}.run-state{display:flex;align-items:center;gap:8px;font-size:9px;letter-spacing:.1em;color:var(--signal);white-space:nowrap}.state-dot{width:7px;height:7px;border-radius:50%;background:var(--signal);box-shadow:0 0 10px #d8fa4e55}.run-state.running .state-dot{animation:blink 1s steps(2,end) infinite}@keyframes blink{50%{opacity:.22}}
+.kicker{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.2em}.kicker:before{content:"";width:20px;height:1px;background:var(--signal)}.machine{display:grid;grid-template-columns:minmax(190px,245px) minmax(390px,1fr) minmax(190px,245px);gap:13px;padding:18px 0 16px;align-items:stretch}.rail{display:flex;flex-direction:column;gap:13px;min-width:0}.module{border:1px solid var(--line);background:linear-gradient(145deg,rgba(17,24,27,.94),rgba(10,14,16,.94));position:relative;min-width:0}.module:before{content:"";position:absolute;top:-1px;left:-1px;width:22px;height:1px;background:var(--cyan)}.module-head{padding:12px 13px 10px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px}.module-title{font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.13em;text-transform:uppercase}.module-code{font-size:8px;color:var(--faint);letter-spacing:.1em;white-space:nowrap}.module-body{padding:14px 13px}.readout{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid #1c272b}.readout:first-child{padding-top:0}.readout:last-child{padding-bottom:0;border-bottom:0}.readout label{color:var(--muted);font-size:9px;letter-spacing:.05em}.readout strong{font-size:11px;font-weight:500;letter-spacing:.02em;text-align:right}.readout .lime{color:var(--signal)}.readout .cyan{color:var(--cyan)}.micro-caption{font-size:8px;letter-spacing:.12em;color:var(--faint);line-height:1.7;text-transform:uppercase}.calibration{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin:12px 0 8px}.calibration i{display:block;height:7px;background:#263237}.calibration i:nth-child(3n){background:#637175}.calibration i:nth-child(7){background:var(--signal)}.calibration i:nth-child(11){background:var(--cyan)}.meter-labels{display:flex;justify-content:space-between;color:var(--faint);font-size:8px;letter-spacing:.08em}.waveform{width:100%;height:46px;display:block;margin-top:8px}.core{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;min-width:0;border:1px solid var(--line);position:relative;overflow:hidden;padding:16px 18px 17px;background:radial-gradient(ellipse at 50% 42%,rgba(29,47,50,.47),rgba(8,12,14,.2) 62%),#0a0e10}.core:before,.core:after{content:"";position:absolute;pointer-events:none}.core:before{inset:8px;border:1px solid #263237}.core:after{top:8px;left:50%;height:10px;border-left:1px solid var(--cyan);opacity:.8}.core-head{width:100%;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;position:relative;z-index:1}.core-head h1{font-family:var(--display);font-size:clamp(19px,2vw,27px);text-transform:uppercase;letter-spacing:.14em;line-height:1;margin:0 0 7px;font-weight:600}.core-head p{font-size:8px;letter-spacing:.14em;color:var(--muted);margin:0;text-transform:uppercase}.mode-chip{color:var(--signal);border:1px solid #455128;padding:6px 8px;font-size:8px;white-space:nowrap;letter-spacing:.1em}.dial-wrap{width:min(100%,440px);aspect-ratio:1;position:relative;margin:3px auto -3px;flex:0 1 auto}.dial-svg{width:100%;height:100%;display:block}.dial-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;padding-top:1px}.time{font-family:var(--mono);font-size:clamp(24px,2.3vw,31px);font-weight:400;letter-spacing:-.075em;color:var(--white);white-space:nowrap;line-height:1.2;text-shadow:0 0 22px #83c7c81b}.time-unit{font-size:8px;color:var(--muted);letter-spacing:.22em;text-transform:uppercase;margin-top:9px}.phase{display:flex;align-items:center;gap:7px;font-size:8px;letter-spacing:.12em;color:var(--signal);margin-top:15px}.phase-mark{width:5px;height:5px;background:var(--signal);transform:rotate(45deg)}.core-foot{width:100%;display:flex;justify-content:space-between;gap:12px;margin-top:auto;padding-top:12px;border-top:1px solid var(--line);font-size:8px;color:var(--faint);letter-spacing:.1em;text-transform:uppercase}.core-foot span:last-child{text-align:right}.actions{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:8px;width:min(100%,440px);margin:14px auto 0}.btn{display:flex;justify-content:center;align-items:center;gap:8px;min-height:45px;background:#11191c;border:1px solid #344146;color:var(--white);font-size:9px;letter-spacing:.1em;text-transform:uppercase;transition:border-color .18s,background .18s,color .18s;white-space:nowrap}.btn:hover:not(:disabled){border-color:var(--cyan);background:#152226}.btn-primary{background:var(--signal);border-color:var(--signal);color:#11170b;font-weight:600}.btn-primary:hover:not(:disabled){background:#e6ff79;border-color:#e6ff79;color:#11170b}.btn-symbol{font-size:12px;line-height:1}.key-hint{display:flex;justify-content:center;flex-wrap:wrap;gap:14px;margin:11px auto 0;color:var(--faint);font-size:8px}.key-hint kbd{font-family:var(--mono);font-size:8px;color:#a6b1b2;border:1px solid #2e3a3e;padding:3px 5px;margin-right:4px}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr}.metric{padding:12px 11px;border-bottom:1px solid #1c272b}.metric:nth-child(odd){border-right:1px solid #1c272b}.metric:nth-last-child(-n+2){border-bottom:0}.metric label{display:block;color:var(--muted);font-size:8px;line-height:1.4;letter-spacing:.1em;min-height:20px}.metric strong{display:block;color:var(--white);font-size:14px;font-weight:400;white-space:nowrap;margin-top:5px;letter-spacing:-.04em}.metric strong.lime{color:var(--signal)}.status-list{display:grid;gap:10px}.status-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:9px}.status-row span:first-child{color:var(--muted)}.status-value{display:flex;align-items:center;gap:6px;color:var(--cyan);white-space:nowrap}.tiny-dot{width:4px;height:4px;border-radius:50%;background:currentColor}
+.lap-panel{border:1px solid var(--line);background:rgba(12,17,19,.94);position:relative}.lap-panel:before{content:"";position:absolute;top:-1px;left:-1px;width:25px;height:1px;background:var(--signal)}.lap-head{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:13px 15px;border-bottom:1px solid var(--line)}.lap-heading{display:flex;align-items:center;gap:12px;min-width:0}.lap-heading h2{font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:.15em;text-transform:uppercase;margin:0}.entry-count{font-size:8px;color:var(--muted);letter-spacing:.1em}.lap-tools{display:flex;align-items:center;gap:7px}.mini-btn{border:1px solid var(--line2);background:transparent;padding:7px 9px;color:var(--muted);font-size:8px;text-transform:uppercase;letter-spacing:.08em}.mini-btn:hover:not(:disabled){color:var(--signal);border-color:var(--signal)}.table-head,.lap-row{display:grid;grid-template-columns:80px minmax(130px,1.1fr) minmax(120px,1fr) minmax(120px,1fr);align-items:center;gap:10px;padding:10px 16px}.table-head{font-size:8px;color:var(--faint);letter-spacing:.15em;border-bottom:1px solid #1b2629}.lap-list{max-height:260px;overflow:auto;scrollbar-width:thin;scrollbar-color:#354448 #0b0f11}.lap-row{font-size:10px;color:#cbd2d0;border-bottom:1px solid #172125}.lap-row:last-child{border-bottom:0}.lap-row .lap-no{color:var(--muted)}.lap-row .lap-total{text-align:right}.lap-row .lap-split{text-align:right;color:var(--cyan)}.lap-row.best .lap-split{color:var(--signal)}.lap-row.slowest .lap-split{color:var(--red)}.lap-empty{min-height:86px;display:flex;align-items:center;justify-content:center;gap:12px;color:var(--faint);font-size:9px;letter-spacing:.09em;padding:18px;text-align:center}.empty-cross{color:var(--signal);font-size:16px}.footer{display:flex;justify-content:space-between;gap:14px;padding:13px 0 0;color:var(--faint);font-size:8px;letter-spacing:.1em;text-transform:uppercase}.footer span:last-child{text-align:right}
+@media(min-width:1050px) and (min-height:650px){.machine{min-height:590px}.core{padding-top:20px}.dial-wrap{width:min(100%,460px)}}
+@media(max-width:1040px){.app{padding-left:17px;padding-right:17px}.machine{grid-template-columns:minmax(160px,205px) minmax(320px,1fr) minmax(160px,205px);gap:9px}.module-head{padding:10px}.module-body{padding:12px 10px}.readout label{font-size:8px}.readout strong{font-size:10px}.metric{padding:11px 8px}.metric strong{font-size:12px}.core{padding:13px 12px}.actions{gap:6px}.btn{font-size:8px}}
+@media(max-width:760px){.app{padding:14px 12px calc(16px + env(safe-area-inset-bottom))}.topbar{padding-bottom:13px;gap:10px}.mark{width:33px;height:33px;font-size:18px}.brand-name{font-size:18px;letter-spacing:.12em}.brand-sub{font-size:7px;letter-spacing:.1em}.top-meta .meta-block{display:none}.run-state{font-size:8px;letter-spacing:.05em}.machine{display:flex;flex-direction:column;gap:10px;padding-top:12px}.core{order:0;padding:14px 11px 13px}.core-head h1{font-size:23px}.core-head p{font-size:7px}.mode-chip{font-size:7px;padding:5px 6px}.dial-wrap{width:min(100%,360px);margin:0 auto -1px}.time{font-size:clamp(20px,5.6vw,27px);letter-spacing:-.08em}.time-unit{font-size:7px;margin-top:7px}.phase{margin-top:11px;font-size:7px}.actions{margin-top:10px;width:100%;grid-template-columns:1.1fr 1fr 1fr}.btn{min-height:47px;font-size:8px;letter-spacing:.06em;gap:6px}.btn-symbol{font-size:11px}.key-hint{display:none;gap:10px;font-size:7px}.key-hint kbd{font-size:7px}.rail{display:grid;grid-template-columns:1fr 1fr;gap:9px}.rail-left{order:1}.rail-right{order:2}.module-title{font-size:13px}.module-code{font-size:7px}.module-head{padding:10px}.module-body{padding:11px 10px}.readout{gap:7px}.readout label{font-size:7px}.readout strong{font-size:9px}.metric{padding:11px 9px}.metric label{font-size:7px;min-height:19px}.metric strong{font-size:12px}.lap-head{padding:11px 10px;flex-wrap:wrap}.lap-heading{gap:8px}.lap-heading h2{font-size:14px}.entry-count{font-size:7px}.mini-btn{padding:7px;font-size:7px}.table-head,.lap-row{grid-template-columns:44px minmax(95px,1fr) minmax(90px,1fr);gap:8px;padding:10px}.table-head span:nth-child(3),.lap-row .lap-total{display:none}.table-head{font-size:7px}.lap-row{font-size:9px}.footer{font-size:7px;line-height:1.6}}
+@media(max-width:390px){.brand-name{font-size:16px}.brand-sub{font-size:6px}.run-state{font-size:7px}.rail{grid-template-columns:1fr}.module-body{padding:10px}.readout label{font-size:8px}.readout strong{font-size:10px}.metric{padding:10px 12px}.metric label{font-size:8px}.metric strong{font-size:13px}.dial-wrap{width:min(100%,320px)}.core-head h1{font-size:21px}.mode-chip{font-size:6px}.btn{font-size:7px}.actions{gap:5px}.table-head,.lap-row{grid-template-columns:39px minmax(82px,1fr) minmax(78px,1fr);gap:6px;padding:9px 8px}}
+@media(orientation:landscape) and (max-height:560px) and (min-width:600px){.app{padding-top:10px;padding-bottom:10px}.topbar{padding-bottom:9px}.brand-sub{margin-top:3px}.mark{width:29px;height:29px}.machine{grid-template-columns:minmax(155px,200px) minmax(320px,1fr) minmax(155px,200px);padding:9px 0;gap:8px}.core{padding:9px 12px}.core-head h1{font-size:18px;margin-bottom:4px}.dial-wrap{width:min(100%,min(42vh,330px));margin:-3px auto -5px}.time{font-size:clamp(18px,3.5vh,25px)}.time-unit{margin-top:5px}.phase{margin-top:6px}.actions{margin-top:4px}.btn{min-height:35px}.key-hint{margin-top:5px}.module-head{padding:8px}.module-body{padding:9px}.readout{padding:7px 0}.metric{padding:9px 7px}.footer{padding-top:7px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
 </head>
 <body>
-  <div class="frame">
-    <header class="topbar">
-      <a class="brand" href="#top" aria-label="VECTOR 07 home">
-        <span class="sigil">V</span>
-        <span><span class="brand-name">VECTOR <b>07</b></span><span class="brand-sub">FIELD TIMING INSTRUMENT / SERIES 01</span></span>
-      </a>
-      <div class="top-meta"><span><i class="led"></i>Release channel / live</span><span>Android build 01</span></div>
-    </header>
-
-    <main id="top">
-      <section class="hero">
-        <div>
-          <div class="kicker">Independent instrument / 001</div>
-          <h1>TIME,<br><span>UNDER</span><br>CONTROL.</h1>
-          <p class="intro">A field-inspired digital chronograph with a technical-console aesthetic. Start the clock, mark split times, and keep your focus on the interval in front of you.</p>
-          <div class="hero-specs" aria-label="App details">
-            <div class="spec"><label>Platform</label><strong>ANDROID</strong></div>
-            <div class="spec"><label>Readout</label><strong>1/100 SEC</strong></div>
-            <div class="spec"><label>Instrument</label><strong>VECTOR / 07</strong></div>
-          </div>
-          <div class="actions">
-            <a class="button button-primary" href="https://github.com/anythingbutnotnpc/vector-07-downloads/releases/latest/download/Vector-07.apk"><span>↓</span> Download APK</a>
-            <a class="button button-secondary" href="https://github.com/anythingbutnotnpc/vector-07-downloads/releases/latest">Release notes <span>↗</span></a>
-          </div>
-          <div class="download-note">DIRECT ANDROID INSTALL · VERSION 1.0.0 · APK FILE</div>
-        </div>
-        <div class="instrument" aria-label="Stylized chronograph illustration">
-          <span class="axis-label axis-top">VECTOR / 07</span><span class="axis-label axis-bottom">CALIBRATION RING / A-01</span><span class="axis-label axis-left">FIELD CHRONOGRAPH</span><span class="axis-label axis-right">RESOLUTION 0.01 SEC</span>
-          <div class="scope">
-            <svg viewBox="0 0 500 500" role="img" aria-label="Technical circular chronograph diagram">
-              <defs><radialGradient id="disc"><stop offset="0" stop-color="#111a1c"/><stop offset=".78" stop-color="#0a1011"/><stop offset="1" stop-color="#11191a"/></radialGradient></defs>
-              <circle cx="250" cy="250" r="220" fill="none" stroke="#273a3c" stroke-width="1"/>
-              <circle cx="250" cy="250" r="201" fill="url(#disc)" stroke="#40585a" stroke-width="1"/>
-              <circle cx="250" cy="250" r="182" fill="none" stroke="#233638" stroke-width="1" stroke-dasharray="2 5"/>
-              <circle cx="250" cy="250" r="156" fill="none" stroke="#324649" stroke-width="1"/>
-              <circle cx="250" cy="250" r="132" fill="none" stroke="#273a3c" stroke-width="1"/>
-              <circle cx="250" cy="250" r="112" fill="none" stroke="#273a3c" stroke-width="1"/>
-              <circle cx="250" cy="250" r="91" fill="none" stroke="#40585a" stroke-width="1"/>
-              <circle cx="250" cy="250" r="73" fill="none" stroke="#273a3c" stroke-width="1" stroke-dasharray="1 6"/>
-              <g stroke="#8ea2a0" stroke-width="1.4" opacity=".85">
-                <path id="tick" d="M250 42v15" />
-                <use href="#tick" transform="rotate(6 250 250)"/><use href="#tick" transform="rotate(12 250 250)"/><use href="#tick" transform="rotate(18 250 250)"/><use href="#tick" transform="rotate(24 250 250)"/><use href="#tick" transform="rotate(30 250 250)"/><use href="#tick" transform="rotate(36 250 250)"/><use href="#tick" transform="rotate(42 250 250)"/><use href="#tick" transform="rotate(48 250 250)"/><use href="#tick" transform="rotate(54 250 250)"/><use href="#tick" transform="rotate(60 250 250)"/><use href="#tick" transform="rotate(66 250 250)"/><use href="#tick" transform="rotate(72 250 250)"/><use href="#tick" transform="rotate(78 250 250)"/><use href="#tick" transform="rotate(84 250 250)"/><use href="#tick" transform="rotate(90 250 250)"/><use href="#tick" transform="rotate(96 250 250)"/><use href="#tick" transform="rotate(102 250 250)"/><use href="#tick" transform="rotate(108 250 250)"/><use href="#tick" transform="rotate(114 250 250)"/><use href="#tick" transform="rotate(120 250 250)"/><use href="#tick" transform="rotate(126 250 250)"/><use href="#tick" transform="rotate(132 250 250)"/><use href="#tick" transform="rotate(138 250 250)"/><use href="#tick" transform="rotate(144 250 250)"/><use href="#tick" transform="rotate(150 250 250)"/><use href="#tick" transform="rotate(156 250 250)"/><use href="#tick" transform="rotate(162 250 250)"/><use href="#tick" transform="rotate(168 250 250)"/><use href="#tick" transform="rotate(174 250 250)"/><use href="#tick" transform="rotate(180 250 250)"/><use href="#tick" transform="rotate(186 250 250)"/><use href="#tick" transform="rotate(192 250 250)"/><use href="#tick" transform="rotate(198 250 250)"/><use href="#tick" transform="rotate(204 250 250)"/><use href="#tick" transform="rotate(210 250 250)"/><use href="#tick" transform="rotate(216 250 250)"/><use href="#tick" transform="rotate(222 250 250)"/><use href="#tick" transform="rotate(228 250 250)"/><use href="#tick" transform="rotate(234 250 250)"/><use href="#tick" transform="rotate(240 250 250)"/><use href="#tick" transform="rotate(246 250 250)"/><use href="#tick" transform="rotate(252 250 250)"/><use href="#tick" transform="rotate(258 250 250)"/><use href="#tick" transform="rotate(264 250 250)"/><use href="#tick" transform="rotate(270 250 250)"/><use href="#tick" transform="rotate(276 250 250)"/><use href="#tick" transform="rotate(282 250 250)"/><use href="#tick" transform="rotate(288 250 250)"/><use href="#tick" transform="rotate(294 250 250)"/><use href="#tick" transform="rotate(300 250 250)"/><use href="#tick" transform="rotate(306 250 250)"/><use href="#tick" transform="rotate(312 250 250)"/><use href="#tick" transform="rotate(318 250 250)"/><use href="#tick" transform="rotate(324 250 250)"/><use href="#tick" transform="rotate(330 250 250)"/><use href="#tick" transform="rotate(336 250 250)"/><use href="#tick" transform="rotate(342 250 250)"/><use href="#tick" transform="rotate(348 250 250)"/><use href="#tick" transform="rotate(354 250 250)"/>
-              </g>
-              <circle cx="250" cy="250" r="201" fill="none" stroke="#d8ff42" stroke-width="3" stroke-dasharray="90 1172" transform="rotate(-90 250 250)"/>
-              <path d="M250 87 L242 105 L258 105 Z" fill="#d8ff42"/>
-              <path d="M250 167v72" stroke="#80d7d4" stroke-width="1" opacity=".8"/>
-              <path d="M250 333v-72" stroke="#80d7d4" stroke-width="1" opacity=".8"/>
-              <path d="M167 250h72M333 250h-72" stroke="#40585a" stroke-width="1"/>
-              <circle cx="250" cy="250" r="5" fill="#d8ff42"/><circle cx="250" cy="250" r="14" fill="none" stroke="#d8ff42" stroke-opacity=".5"/>
-              <g fill="#879a98" font-family="monospace" font-size="10" text-anchor="middle"><text x="250" y="82">00</text><text x="373" y="130">10</text><text x="421" y="254">15</text><text x="372" y="378">20</text><text x="250" y="428">30</text><text x="128" y="378">40</text><text x="78" y="254">45</text><text x="128" y="130">50</text></g>
-              <g stroke="#395053" stroke-width="1"><path d="M250 0v25M250 475v25M0 250h25M475 250h25"/><path d="M38 38l18 18M444 444l18 18M462 38l-18 18M56 444l-18 18"/></g>
-            </svg>
-            <div class="scope-readout"><div class="scope-label">Chronograph / live instrument</div><div class="scope-time">00:00:00.00</div><div class="scope-status"><i class="led"></i>Ready to measure</div></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="previews" id="interface">
-        <div class="section-head"><h2>Interface / field notes</h2><span>FIG. 01–02 / ORIENTATION STUDIES</span></div>
-        <div class="preview-grid">
-          <figure class="preview-card" style="margin:0">
-            <img src="assets/desktop-preview.png" alt="VECTOR 07 desktop landscape interface preview showing the central chronograph and split register" loading="lazy">
-            <figcaption class="preview-label"><span>01 / Landscape console</span><span>Desktop layout</span></figcaption>
-          </figure>
-          <figure class="preview-card mobile-preview" style="margin:0">
-            <img src="assets/mobile-preview.png" alt="VECTOR 07 mobile portrait interface preview showing chronograph, telemetry and split register" loading="lazy">
-            <figcaption class="preview-label"><span>02 / Portrait instrument</span><span>Mobile layout</span></figcaption>
-          </figure>
-        </div>
-      </section>
-
-      <section class="feature-strip" aria-label="Features">
-        <article class="feature"><div class="feature-num">A—01 / TIMING</div><h3>Chronograph core</h3><p>Start, stop, resume and reset with a hundredth-of-a-second readout.</p></article>
-        <article class="feature"><div class="feature-num">A—02 / SPLITS</div><h3>Split register</h3><p>Record laps and compare last, best and average split times.</p></article>
-        <article class="feature"><div class="feature-num">A—03 / FORMAT</div><h3>Built for both orientations</h3><p>A technical console on desktop, recomposed into a portrait instrument on mobile.</p></article>
-      </section>
-
-      <section class="release-panel" id="download">
-        <div>
-          <div class="release-kicker">Release 01 / Android</div>
-          <h2>Take the instrument with you.</h2>
-          <p>Download the Android installer directly. This is an independently distributed build, not a Google Play listing. You can install it on a compatible Android device and keep the APK to share with people you trust.</p>
-        </div>
-        <div class="release-action"><a class="button button-primary" href="https://github.com/anythingbutnotnpc/vector-07-downloads/releases/latest/download/Vector-07.apk"><span>↓</span> Download VECTOR 07</a></div>
-      </section>
-
-      <p class="safety">INSTALLATION NOTE / Android may ask you to approve installation from the browser or file manager used to open the APK. Only install software from a source you trust. This initial build is signed with the Android debug key and is intended for testing and direct sharing; it is not the final Google Play release.</p>
-    </main>
-    <footer><span>VECTOR TIMING SYSTEMS · INSTRUMENT NO. 07</span><span>Independent build / <a href="https://github.com/anythingbutnotnpc/vector-07-downloads/releases/latest">Release archive ↗</a></span></footer>
-  </div>
+<div class="app">
+<header class="topbar">
+  <div class="identity"><div class="mark" aria-hidden="true">V<span style="font-size:9px;align-self:end;margin:0 0 7px -2px">/07</span></div><div><div class="brand-name">Vector <span style="color:var(--signal)">07</span></div><div class="brand-sub">Field timing instrument / Series 01</div></div></div>
+  <div class="top-meta"><div class="meta-block">SYSTEM / CHR-07<strong>PRECISION CORE</strong></div><div class="meta-block">RESOLUTION<strong>0.01 SECOND</strong></div><div class="run-state" id="runState"><span class="state-dot"></span><span id="stateText">STANDBY</span></div></div>
+</header>
+<main>
+<section class="machine" aria-label="Stopwatch instrument">
+  <aside class="rail rail-left">
+    <section class="module"><div class="module-head"><div class="module-title">Signal profile</div><div class="module-code">A—01</div></div><div class="module-body"><div class="readout"><label>Clock source</label><strong class="cyan">MONOTONIC</strong></div><div class="readout"><label>Precision</label><strong>1 / 100 SEC</strong></div><div class="readout"><label>Session state</label><strong id="leftState">ARMED</strong></div><div class="calibration" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="meter-labels"><span>LOW</span><span>CALIBRATED</span><span>HIGH</span></div></div></section>
+    <section class="module"><div class="module-head"><div class="module-title">Trace monitor</div><div class="module-code">A—02</div></div><div class="module-body"><div class="micro-caption">Timing trace / illustrative signal</div><svg class="waveform" viewBox="0 0 220 46" preserveAspectRatio="none" aria-label="Decorative signal trace"><path d="M0 24H220M0 8H220M0 39H220" stroke="#243136" stroke-width=".7" fill="none"/><path id="traceWave" d="M0 25 L12 25 L17 24 L22 9 L26 37 L31 25 L48 25 L53 18 L57 31 L62 24 L81 25 L88 12 L94 36 L100 25 L122 25 L130 20 L137 29 L144 25 L164 25 L172 7 L178 40 L183 25 L204 25 L210 19 L215 25 L220 25" stroke="#83c7c8" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M0 25H220" stroke="#d8fa4e" stroke-width=".5" stroke-dasharray="2 5" opacity=".65"/></svg><div class="meter-labels"><span>0 ms</span><span>TRACE / LIVE</span><span>100 ms</span></div></div></section>
+  </aside>
+  <section class="core" aria-label="Main timing control">
+    <div class="core-head"><div><h1>Chronograph</h1><p>Elapsed interval / digital readout</p></div><div class="mode-chip">MODE 01 · SPLIT</div></div>
+    <div class="dial-wrap">
+      <svg class="dial-svg" viewBox="0 0 420 420" role="img" aria-label="Precision scanner dial with radial calibration marks">
+        <defs><linearGradient id="arcTint" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d8fa4e"/><stop offset="1" stop-color="#83c7c8"/></linearGradient><radialGradient id="centerFill"><stop stop-color="#11191b"/><stop offset="1" stop-color="#080c0e"/></radialGradient></defs>
+        <circle cx="210" cy="210" r="191" stroke="#344248" stroke-width="1" fill="none"/><circle cx="210" cy="210" r="184" stroke="#1f2a2e" stroke-width="1" stroke-dasharray="2 5" fill="none"/>
+        <path d="M210 9V31M210 389V411M9 210H31M389 210H411" stroke="#83c7c8" stroke-width="1" opacity=".85"/><path d="M67 67l16 16M337 337l16 16M353 67l-16 16M83 337l-16 16" stroke="#46545a" stroke-width="1"/>
+        <circle cx="210" cy="210" r="166" stroke="#344248" stroke-width="1" fill="none"/><circle cx="210" cy="210" r="151" stroke="#273439" stroke-width="1" stroke-dasharray="1 5" fill="none"/>
+        <circle cx="210" cy="210" r="132" stroke="#2d3b40" stroke-width="1" fill="none"/><circle cx="210" cy="210" r="119" stroke="#273439" stroke-width="1" fill="none"/>
+        <path d="M210 44 A166 166 0 0 1 376 210" stroke="#d8fa4e" stroke-width="2.5" fill="none" stroke-dasharray="30 8 2 8 15 8" opacity=".95"/>
+        <path d="M210 376 A166 166 0 0 1 44 210" stroke="#83c7c8" stroke-width="2" fill="none" stroke-dasharray="14 8 36 8 3 8" opacity=".75"/>
+        <path d="M45 175H92M328 245H375M175 45V92M245 328V375" stroke="#314047" stroke-width="1"/>
+        <g id="dialTicks"></g>
+        <g id="dialLabels" fill="#718187" font-family="IBM Plex Mono, monospace" font-size="9" text-anchor="middle"></g>
+        <circle cx="210" cy="210" r="103" fill="url(#centerFill)" stroke="#3a484d" stroke-width="1.2"/><circle cx="210" cy="210" r="94" fill="none" stroke="#263237" stroke-width="1"/>
+        <circle cx="210" cy="210" r="84" fill="none" stroke="#273439" stroke-width="1" stroke-dasharray="1 6"/>
+        <g id="sweepArm" transform="rotate(0 210 210)"><path d="M210 210V48" stroke="url(#arcTint)" stroke-width="1" opacity=".72"/><path d="M210 48L205 61H215Z" fill="#d8fa4e"/><circle cx="210" cy="69" r="2.5" fill="#d8fa4e"/></g>
+        <g stroke="#d8fa4e" stroke-width="1.5"><path d="M197 210H204M216 210H223M210 197V204M210 216V223"/></g><circle cx="210" cy="210" r="3" fill="#d8fa4e"/><circle cx="210" cy="210" r="9" stroke="#83c7c8" stroke-width=".7" fill="none" opacity=".7"/>
+        <text x="210" y="34" text-anchor="middle" fill="#93a1a3" font-family="IBM Plex Mono, monospace" font-size="8" letter-spacing="2">VECTOR / 07</text><text x="210" y="397" text-anchor="middle" fill="#65757a" font-family="IBM Plex Mono, monospace" font-size="8" letter-spacing="2">FIELD CHRONOGRAPH</text>
+      </svg>
+      <div class="dial-center"><div class="time" id="display" role="timer" aria-label="Elapsed time">00:00:00.00</div><div class="time-unit">HRS : MIN : SEC . 1/100</div><div class="phase"><span class="phase-mark"></span><span id="phaseText">READY TO MEASURE</span></div></div>
+    </div>
+    <div class="actions"><button class="btn btn-primary" id="startBtn"><span class="btn-symbol" id="startIcon">▶</span><span id="startLabel">Start</span></button><button class="btn" id="lapBtn" disabled><span class="btn-symbol">⌁</span><span>Split / Lap</span></button><button class="btn" id="resetBtn"><span class="btn-symbol">↺</span><span>Reset</span></button></div>
+    <div class="key-hint"><span><kbd>SPACE</kbd> Start / stop</span><span><kbd>L</kbd> Split</span><span><kbd>R</kbd> Reset</span></div>
+    <div class="core-foot"><span>Signal integrity / nominal</span><span>Local session · no account</span></div>
+  </section>
+  <aside class="rail rail-right">
+    <section class="module"><div class="module-head"><div class="module-title">Live telemetry</div><div class="module-code">B—01</div></div><div class="metric-grid"><div class="metric"><label>LAST SPLIT</label><strong id="lastLap">— — —</strong></div><div class="metric"><label>BEST SPLIT</label><strong id="bestLap" class="lime">— — —</strong></div><div class="metric"><label>AVERAGE</label><strong id="avgLap">— — —</strong></div><div class="metric"><label>DELTA VS PREVIOUS</label><strong id="deltaLap">— — —</strong></div></div></section>
+    <section class="module"><div class="module-head"><div class="module-title">System check</div><div class="module-code">B—02</div></div><div class="module-body"><div class="status-list"><div class="status-row"><span>Timer engine</span><span class="status-value"><i class="tiny-dot"></i>READY</span></div><div class="status-row"><span>Lap recorder</span><span class="status-value" id="recorderState"><i class="tiny-dot"></i>IDLE</span></div><div class="status-row"><span>Display sync</span><span class="status-value"><i class="tiny-dot"></i>ACTIVE</span></div><div class="status-row"><span>Session laps</span><span class="status-value" id="sysLaps">00 / —</span></div></div></div></section>
+  </aside>
+</section>
+<section class="lap-panel" aria-label="Lap history"><div class="lap-head"><div class="lap-heading"><h2>Split register</h2><span class="entry-count" id="lapCount">00 RECORDED</span></div><div class="lap-tools"><button class="mini-btn" id="exportBtn" disabled>Export CSV ↓</button><button class="mini-btn" id="clearLapsBtn" disabled>Clear laps ×</button></div></div><div class="table-head"><span>INDEX</span><span>CUMULATIVE TIME</span><span style="text-align:right">SPLIT TIME</span><span style="text-align:right">STATUS</span></div><div class="lap-list" id="laps" aria-live="polite"><div class="lap-empty"><span class="empty-cross">＋</span><span>NO SPLITS LOGGED / START THE CHRONOGRAPH TO RECORD A LAP</span></div></div></section>
+</main>
+<footer class="footer"><span>Instrument no. 07 / Precision is a habit.</span><span>Vector timing systems · v1.1</span></footer>
+</div>
+<script>
+(() => {
+  const NS='http://www.w3.org/2000/svg';
+  const ticks=document.getElementById('dialTicks'), labels=document.getElementById('dialLabels');
+  for(let i=0;i<120;i++){
+    const angle=(i*3-90)*Math.PI/180, major=i%10===0, medium=i%5===0;
+    const r1=major?157:medium?161:166, r2=major?174:medium?170:169;
+    const line=document.createElementNS(NS,'line');
+    line.setAttribute('x1',210+Math.cos(angle)*r1);line.setAttribute('y1',210+Math.sin(angle)*r1);
+    line.setAttribute('x2',210+Math.cos(angle)*r2);line.setAttribute('y2',210+Math.sin(angle)*r2);
+    line.setAttribute('stroke',major?'#b2c1c0':medium?'#718187':'#3a494e');line.setAttribute('stroke-width',major?'1.5':medium?'1':'0.8');ticks.appendChild(line);
+    if(i%10===0){const n=document.createElementNS(NS,'text');n.setAttribute('x',210+Math.cos(angle)*143);n.setAttribute('y',210+Math.sin(angle)*143+3);n.textContent=String(i/2).padStart(2,'0');labels.appendChild(n)}
+  }
+  const $=id=>document.getElementById(id);
+  const display=$('display'), startBtn=$('startBtn'), startLabel=$('startLabel'), startIcon=$('startIcon'), lapBtn=$('lapBtn'), resetBtn=$('resetBtn'), lapsEl=$('laps');
+  // Decorative trace only: animated independently from stopwatch timing.
+  const traceWave=$('traceWave');
+  const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function animateTrace(now){
+    if(reducedMotion||!traceWave)return;
+    const p=now*0.001;
+    const points=[];
+    for(let x=0;x<=220;x+=2){
+      let y=25 + 2.1*Math.sin(x*0.105+p*2.1) + 1.25*Math.sin(x*0.245-p*1.35);
+      const c1=(now*0.030)%270-25;
+      const c2=(now*0.019+102)%270-25;
+      y += -17*Math.exp(-Math.pow((x-c1)/2.1,2)) + 12*Math.exp(-Math.pow((x-(c1+4))/2.6,2));
+      y += 13*Math.exp(-Math.pow((x-c2)/2.8,2)) - 8*Math.exp(-Math.pow((x-(c2+4))/2.6,2));
+      y=Math.max(4,Math.min(41,y));
+      points.push(`${x===0?'M':'L'}${x} ${y.toFixed(2)}`);
+    }
+    traceWave.setAttribute('d',points.join(' '));
+    requestAnimationFrame(animateTrace);
+  }
+  if(!reducedMotion)requestAnimationFrame(animateTrace);
+  let running=false, startedAt=0, elapsed=0, raf=0, splits=[], hasSession=false;
+  const fmt=ms=>{ms=Math.max(0,ms);const cs=Math.floor(ms/10)%100,sec=Math.floor(ms/1000)%60,min=Math.floor(ms/60000)%60,hr=Math.floor(ms/3600000);return `${String(hr).padStart(2,'0')}:${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}.${String(cs).padStart(2,'0')}`};
+  const shortFmt=ms=>{ms=Math.max(0,ms);const min=Math.floor(ms/60000),sec=Math.floor(ms/1000)%60,cs=Math.floor(ms/10)%100;return `${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}.${String(cs).padStart(2,'0')}`};
+  const current=()=>elapsed+(running?performance.now()-startedAt:0);
+  function setState(){
+    $('runState').classList.toggle('running',running);
+    $('stateText').textContent=running?'CHRONO ACTIVE':hasSession?'SESSION HELD':'STANDBY';
+    $('leftState').textContent=running?'RUNNING':hasSession?'PAUSED':'ARMED';
+    $('phaseText').textContent=running?'MEASUREMENT IN PROGRESS':hasSession?'TIME HELD / READY TO RESUME':'READY TO MEASURE';
+    $('recorderState').innerHTML='<i class="tiny-dot"></i>'+(running?'RECORDING':splits.length?'STORED':'IDLE');
+    $('sysLaps').textContent=String(splits.length).padStart(2,'0')+' / —';
+  }
+  function paint(){display.textContent=fmt(current());$('sweepArm').setAttribute('transform',`rotate(${(current()/60000*360)%360} 210 210)`);if(running)raf=requestAnimationFrame(paint)}
+  function startStop(){if(running){elapsed+=performance.now()-startedAt;running=false;hasSession=true;cancelAnimationFrame(raf);startLabel.textContent='Resume';startIcon.textContent='▶';startBtn.setAttribute('aria-label','Resume stopwatch');lapBtn.disabled=false;display.textContent=fmt(elapsed)}else{startedAt=performance.now();running=true;hasSession=true;startLabel.textContent='Stop';startIcon.textContent='Ⅱ';startBtn.setAttribute('aria-label','Stop stopwatch');lapBtn.disabled=false;paint()}setState()}
+  function recordLap(){if(!hasSession||(!running&&elapsed===0))return;const total=current(),previous=splits.length?splits[splits.length-1].total:0;splits.push({total,delta:total-previous});renderLaps();renderStats();setState()}
+  function reset(){running=false;cancelAnimationFrame(raf);elapsed=0;startedAt=0;hasSession=false;splits=[];display.textContent=fmt(0);$('sweepArm').setAttribute('transform','rotate(0 210 210)');startLabel.textContent='Start';startIcon.textContent='▶';startBtn.setAttribute('aria-label','Start stopwatch');lapBtn.disabled=true;renderLaps();renderStats();setState()}
+  function renderLaps(){
+    $('lapCount').textContent=String(splits.length).padStart(2,'0')+' RECORDED';$('exportBtn').disabled=!splits.length;$('clearLapsBtn').disabled=!splits.length;
+    if(!splits.length){lapsEl.innerHTML='<div class="lap-empty"><span class="empty-cross">＋</span><span>NO SPLITS LOGGED / START THE CHRONOGRAPH TO RECORD A LAP</span></div>';return}
+    const durations=splits.map(s=>s.delta),best=Math.min(...durations),worst=Math.max(...durations);
+    lapsEl.innerHTML=[...splits].reverse().map((s,rev)=>{const i=splits.length-1-rev;let cls='',status='RECORDED';if(splits.length>1&&s.delta===best){cls=' best';status='FASTEST'}else if(splits.length>1&&s.delta===worst){cls=' slowest';status='SLOWEST'}return `<div class="lap-row${cls}"><span class="lap-no">L—${String(i+1).padStart(2,'0')}</span><span>${fmt(s.total)}</span><span class="lap-split">+${shortFmt(s.delta)}</span><span class="lap-total">${status}</span></div>`}).join('');
+  }
+  function renderStats(){const set=(id,v)=>$(id).textContent=v;if(!splits.length){set('lastLap','— — —');set('bestLap','— — —');set('avgLap','— — —');set('deltaLap','— — —');return}const ds=splits.map(s=>s.delta),last=ds.at(-1),best=Math.min(...ds),avg=ds.reduce((a,b)=>a+b,0)/ds.length;set('lastLap',shortFmt(last));set('bestLap',shortFmt(best));set('avgLap',shortFmt(avg));if(ds.length>1){const d=last-ds[ds.length-2];set('deltaLap',(d>0?'+':d<0?'−':'±')+shortFmt(Math.abs(d)))}else set('deltaLap','— — —')}
+  function exportCSV(){if(!splits.length)return;const rows=[['Lap','Cumulative Time','Split Time (ms)','Split Time','Delta Status'],...splits.map((s,i)=>[i+1,fmt(s.total),Math.round(s.delta),shortFmt(s.delta),i===0?'BASELINE':s.delta===Math.min(...splits.map(v=>v.delta))?'FASTEST':s.delta===Math.max(...splits.map(v=>v.delta))?'SLOWEST':'RECORDED'])];const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='vector-07-laps.csv';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
+  startBtn.addEventListener('click',startStop);lapBtn.addEventListener('click',recordLap);resetBtn.addEventListener('click',reset);$('exportBtn').addEventListener('click',exportCSV);$('clearLapsBtn').addEventListener('click',()=>{splits=[];renderLaps();renderStats();setState()});
+  document.addEventListener('keydown',e=>{if(e.repeat||e.altKey||e.ctrlKey||e.metaKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(e.code==='Space'){e.preventDefault();startStop()}else if(e.key.toLowerCase()==='l'){recordLap()}else if(e.key.toLowerCase()==='r'){reset()}});
+  if('serviceWorker'in navigator&&location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+  setState();renderLaps();renderStats();
+})();
+</script>
 </body>
 </html>
